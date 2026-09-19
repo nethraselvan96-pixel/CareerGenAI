@@ -1,0 +1,988 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>CareerGenAI | AI Career Assistant</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         NAVIGATION
+    ====================================================== -->
+
+    <nav class="navbar">
+
+        <div class="logo">
+            Career<span>GenAI</span>
+        </div>
+
+
+        <div class="nav-links">
+
+            <a href="#home">
+                Home
+            </a>
+
+            <a href="#features">
+                Features
+            </a>
+
+            <a href="#about">
+                About
+            </a>
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- =====================================================
+         HERO SECTION
+    ====================================================== -->
+
+    <section
+        id="home"
+        class="hero"
+    >
+
+        <div class="hero-content">
+
+            <p class="tagline">
+                AI-POWERED CAREER PLATFORM
+            </p>
+
+
+            <h1>
+
+                Build Your Career
+
+                <span>
+                    with Generative AI
+                </span>
+
+            </h1>
+
+
+            <p class="description">
+
+                CareerGenAI helps students discover suitable
+                career paths, analyze their skills, identify
+                skill gaps, and create personalized learning
+                roadmaps using Generative AI.
+
+            </p>
+
+
+            <div class="hero-buttons">
+
+                <button
+                    type="button"
+                    id="startBtn"
+                >
+                    🚀 Start Career Analysis
+                </button>
+
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    onclick="document.getElementById('features').scrollIntoView({ behavior: 'smooth' })"
+                >
+                    Explore Features
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         CAREER ANALYSIS SECTION
+    ====================================================== -->
+
+    <section
+        id="career-analysis"
+        class="career-analysis"
+    >
+
+        <div class="analysis-container">
+
+
+            <p class="tagline">
+                PERSONALIZED AI CAREER ANALYSIS
+            </p>
+
+
+            <h2>
+                Discover Your Career Path
+            </h2>
+
+
+            <p class="section-description">
+
+                Tell CareerGenAI about yourself and generate
+                a personalized career roadmap.
+
+            </p>
+
+
+
+            <!-- =================================================
+                 CAREER FORM
+            ================================================== -->
+
+            <form id="careerForm">
+
+
+                <!-- EDUCATION -->
+
+                <div class="form-group">
+
+                    <label for="education">
+                        Education
+                    </label>
+
+
+                    <select
+                        id="education"
+                        required
+                    >
+
+                        <option value="">
+                            Select your education
+                        </option>
+
+                        <option value="B.Tech">
+                            B.Tech
+                        </option>
+
+                        <option value="B.E">
+                            B.E
+                        </option>
+
+                        <option value="B.Sc">
+                            B.Sc
+                        </option>
+
+                        <option value="BCA">
+                            BCA
+                        </option>
+
+                        <option value="MCA">
+                            MCA
+                        </option>
+
+                        <option value="Other">
+                            Other
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- SKILLS -->
+
+                <div class="form-group">
+
+                    <label for="skills">
+                        Your Skills
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="skills"
+                        placeholder="Example: Python, SQL, HTML, Power BI"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- INTERESTS -->
+
+                <div class="form-group">
+
+                    <label for="interests">
+                        Your Interests
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="interests"
+                        placeholder="Example: AI, Data Science, Web Development"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- CAREER GOAL -->
+
+                <div class="form-group">
+
+                    <label for="careerGoal">
+                        Target Career
+                    </label>
+
+
+                    <select
+                        id="careerGoal"
+                        required
+                    >
+
+                        <option value="">
+                            Select your target career
+                        </option>
+
+                        <option value="AI Engineer">
+                            AI Engineer
+                        </option>
+
+                        <option value="Generative AI Engineer">
+                            Generative AI Engineer
+                        </option>
+
+                        <option value="Data Scientist">
+                            Data Scientist
+                        </option>
+
+                        <option value="Data Analyst">
+                            Data Analyst
+                        </option>
+
+                        <option value="Machine Learning Engineer">
+                            Machine Learning Engineer
+                        </option>
+
+                        <option value="Full Stack Developer">
+                            Full Stack Developer
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- EXPERIENCE -->
+
+                <div class="form-group">
+
+                    <label for="experience">
+                        Experience Level
+                    </label>
+
+
+                    <select
+                        id="experience"
+                        required
+                    >
+
+                        <option value="">
+                            Select experience
+                        </option>
+
+                        <option value="Beginner">
+                            Beginner
+                        </option>
+
+                        <option value="Intermediate">
+                            Intermediate
+                        </option>
+
+                        <option value="Advanced">
+                            Advanced
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <!-- SUBMIT -->
+
+                <button
+                    type="submit"
+                    class="analyze-btn"
+                >
+
+                    🚀 Analyze My Career
+
+                </button>
+
+
+            </form>
+
+
+
+            <!-- =================================================
+                 AI LOADING
+            ================================================== -->
+
+            <div
+                id="aiLoading"
+                class="ai-loading"
+                style="display: none;"
+            >
+
+                <div class="ai-spinner"></div>
+
+                <p id="loadingText">
+                    🤖 CareerGenAI is analyzing your profile...
+                </p>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 CAREER RESULT
+            ================================================== -->
+
+            <div
+                id="careerResult"
+                class="career-result"
+                style="display: none;"
+            >
+
+
+                <h2>
+                    🎯 Your Career Analysis
+                </h2>
+
+
+
+                <!-- PROFILE RESULT GRID -->
+
+                <div class="result-grid">
+
+
+                    <!-- RECOMMENDED CAREER -->
+
+                    <div class="result-card">
+
+                        <h3>
+                            Recommended Career
+                        </h3>
+
+                        <p id="resultCareer">
+                            -
+                        </p>
+
+                    </div>
+
+
+
+                    <!-- CAREER MATCH -->
+
+                    <div class="result-card">
+
+                        <h3>
+                            🎯 Career Match
+                        </h3>
+
+
+                        <p id="careerScore">
+                            --%
+                        </p>
+
+
+                        <div class="score-bar">
+
+                            <div
+                                id="scoreProgress"
+                                style="width: 0%;"
+                            ></div>
+
+                        </div>
+
+                    </div>
+
+
+
+                    <!-- EXPERIENCE -->
+
+                    <div class="result-card">
+
+                        <h3>
+                            Experience Level
+                        </h3>
+
+                        <p id="resultExperience">
+                            -
+                        </p>
+
+                    </div>
+
+
+
+                    <!-- SKILLS -->
+
+                    <div class="result-card">
+
+                        <h3>
+                            Your Skills
+                        </h3>
+
+                        <p id="resultSkills">
+                            -
+                        </p>
+
+                    </div>
+
+
+
+                    <!-- INTERESTS -->
+
+                    <div class="result-card">
+
+                        <h3>
+                            Interests
+                        </h3>
+
+                        <p id="resultInterests">
+                            -
+                        </p>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =================================================
+                     SKILL GAP ANALYSIS
+                ================================================== -->
+
+                <div class="skill-gap-box">
+
+                    <h3>
+                        📚 AI Skill Gap Analysis
+                    </h3>
+
+
+                    <div class="skill-columns">
+
+
+                        <!-- CURRENT SKILLS -->
+
+                        <div class="skill-section">
+
+                            <h4>
+                                💪 Current Skills
+                            </h4>
+
+
+                            <div id="currentSkills">
+
+                                Your current skills
+                                will appear here.
+
+                            </div>
+
+                        </div>
+
+
+
+                        <!-- MISSING SKILLS -->
+
+                        <div class="skill-section">
+
+                            <h4>
+                                🎯 Skills to Learn
+                            </h4>
+
+
+                            <div id="missingSkills">
+
+                                Recommended skills
+                                will appear here.
+
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     ROADMAP
+                ================================================== -->
+
+                <div class="roadmap-section">
+
+                    <h3>
+                        🗺️ Your AI Career Roadmap
+                    </h3>
+
+
+                    <div id="roadmapContainer">
+
+                        <div class="roadmap-card">
+
+                            <div class="roadmap-number">
+                                1
+                            </div>
+
+
+                            <div class="roadmap-content">
+
+                                <h4>
+                                    Step 1
+                                </h4>
+
+
+                                <p>
+                                    AI roadmap will appear here.
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     PROJECT RECOMMENDATIONS
+                ================================================== -->
+
+                <div class="projects-section">
+
+                    <h3>
+                        🚀 AI Project Recommendations
+                    </h3>
+
+
+                    <div id="projectsContainer">
+
+                        <div class="project-card">
+
+                            <h4>
+                                AI projects will appear here
+                            </h4>
+
+
+                            <p>
+                                Complete your career analysis
+                                to get personalized projects.
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     RESUME IMPROVEMENTS
+                ================================================== -->
+
+                <div class="resume-section">
+
+                    <h3>
+                        📄 AI Resume Improvements
+                    </h3>
+
+
+                    <div id="resumeContainer">
+
+                        <div class="resume-card">
+
+                            <p>
+
+                                Complete your career analysis
+                                to get personalized resume
+                                suggestions.
+
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     FULL AI RESULT
+                ================================================== -->
+
+                <div class="ai-result-box">
+
+                    <h3>
+                        🤖 CareerGenAI AI Analysis
+                    </h3>
+
+
+                    <div id="aiResult">
+
+                        Complete your career analysis
+                        to generate your AI-powered guidance.
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- =================================================
+                     CAREER READINESS DASHBOARD
+                ================================================== -->
+
+                <div class="readiness-dashboard">
+
+                    <h2>
+                        📊 Career Readiness Dashboard
+                    </h2>
+
+
+                    <p class="readiness-subtitle">
+
+                        Understand how prepared you are
+                        for your target career.
+
+                    </p>
+
+
+
+                    <div class="readiness-grid">
+
+
+                        <!-- CAREER MATCH -->
+
+                        <div class="readiness-card">
+
+                            <div class="readiness-icon">
+                                🎯
+                            </div>
+
+                            <h3>
+                                Career Match
+                            </h3>
+
+                            <div
+                                class="readiness-value"
+                                id="readinessCareer"
+                            >
+                                --%
+                            </div>
+
+                            <p>
+                                How closely your profile
+                                matches your career goal.
+                            </p>
+
+                        </div>
+
+
+
+                        <!-- TECHNICAL SKILLS -->
+
+                        <div class="readiness-card">
+
+                            <div class="readiness-icon">
+                                💻
+                            </div>
+
+                            <h3>
+                                Technical Skills
+                            </h3>
+
+                            <div
+                                class="readiness-value"
+                                id="readinessSkills"
+                            >
+                                --%
+                            </div>
+
+                            <p>
+                                Your current technical
+                                skill readiness.
+                            </p>
+
+                        </div>
+
+
+
+                        <!-- AI READINESS -->
+
+                        <div class="readiness-card">
+
+                            <div class="readiness-icon">
+                                🧠
+                            </div>
+
+                            <h3>
+                                AI Readiness
+                            </h3>
+
+                            <div
+                                class="readiness-value"
+                                id="readinessAI"
+                            >
+                                --%
+                            </div>
+
+                            <p>
+                                Your preparation for
+                                AI and GenAI roles.
+                            </p>
+
+                        </div>
+
+
+
+                        <!-- OVERALL -->
+
+                        <div class="readiness-card">
+
+                            <div class="readiness-icon">
+                                📈
+                            </div>
+
+                            <h3>
+                                Overall Readiness
+                            </h3>
+
+                            <div
+                                class="readiness-value"
+                                id="readinessOverall"
+                            >
+                                --%
+                            </div>
+
+                            <p>
+                                Your overall career
+                                preparation level.
+                            </p>
+
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FEATURES
+    ====================================================== -->
+
+    <section
+        id="features"
+        class="features"
+    >
+
+        <h2>
+            What CareerGenAI Can Do
+        </h2>
+
+
+        <p class="section-description">
+
+            One platform to understand your skills
+            and plan your AI-powered career.
+
+        </p>
+
+
+        <div class="feature-container">
+
+
+            <div class="feature-card">
+
+                <div class="icon">
+                    🎯
+                </div>
+
+                <h3>
+                    Career Recommendation
+                </h3>
+
+                <p>
+
+                    Analyze your interests, skills and goals
+                    to explore relevant technology career paths.
+
+                </p>
+
+            </div>
+
+
+
+            <div class="feature-card">
+
+                <div class="icon">
+                    🧠
+                </div>
+
+                <h3>
+                    Skill Gap Analysis
+                </h3>
+
+                <p>
+
+                    Identify the skills you already have
+                    and discover what you need to learn
+                    for your target role.
+
+                </p>
+
+            </div>
+
+
+
+            <div class="feature-card">
+
+                <div class="icon">
+                    🗺️
+                </div>
+
+                <h3>
+                    AI Learning Roadmap
+                </h3>
+
+                <p>
+
+                    Generate a personalized step-by-step
+                    learning roadmap based on your
+                    career goal.
+
+                </p>
+
+            </div>
+
+
+
+            <div class="feature-card">
+
+                <div class="icon">
+                    📄
+                </div>
+
+                <h3>
+                    Resume Assistant
+                </h3>
+
+                <p>
+
+                    Get AI-powered suggestions to improve
+                    your resume and highlight relevant
+                    skills and projects.
+
+                </p>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         ABOUT
+    ====================================================== -->
+
+    <section
+        id="about"
+        class="about"
+    >
+
+        <h2>
+            About CareerGenAI
+        </h2>
+
+
+        <p>
+
+            CareerGenAI is a Generative AI-based career
+            guidance platform designed to help students
+            understand their current skills, identify
+            career opportunities, and create personalized
+            learning plans.
+
+        </p>
+
+    </section>
+
+
+
+    <!-- =====================================================
+         FOOTER
+    ====================================================== -->
+
+    <footer>
+
+        <p>
+
+            © 2026 CareerGenAI |
+            Built with AI & Generative AI
+
+        </p>
+
+    </footer>
+
+
+
+    <!-- =====================================================
+         JAVASCRIPT
+    ====================================================== -->
+
+    <script src="script.js"></script>
+
+
+</body>
+
+</html>
+```
