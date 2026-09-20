@@ -58,8 +58,13 @@ Displays multiple career-readiness indicators:
 Allows users to print or save their personalized CareerGenAI analysis as a PDF report.
 
 ---
+## 🏗️ System Architecture
 
+![CareerGenAI System Architecture](screenshots/architecture.png)
+
+---
 ## 🧠 How It Works## 📸 Screenshots
+
 
 ### 🏠 Home Page
 
