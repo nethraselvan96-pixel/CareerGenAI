@@ -16,11 +16,6 @@ app = Flask(__name__)
 CORS(app)
 
 
-app.route("/")
-def home():
-    return jsonify({
-        "message": "CareerGenAI backend is running 🚀"
-    })
 @app.route("/")
 def home():
     return send_from_directory(FRONTEND_DIR, "index.html")
@@ -56,6 +51,13 @@ Skills: {skills}
 Interests: {interests}
 Career Goal: {career_goal}
 Experience: {experience}
+Before generating the final answer:
+
+1. Identify the student's current skills.
+2. Identify the skills normally required for the recommended career.
+3. Compare both lists.
+4. Find the skills required for the career that the student does not currently have.
+5. Use those skills as SKILLS TO LEARN.
 
 Give practical career guidance.
 
@@ -74,23 +76,36 @@ Career Match Score: 78%
 Give 2-3 short points.
 
 💪 CURRENT SKILL STRENGTHS
-Give 3-5 short bullet points describing the student's existing skills.
-
-📚 IMPORTANT SKILL GAPS
-Give 3-5 short bullet points describing the most important skills the student needs to learn.
-
-Use this exact format:
 
 CURRENT SKILLS:
 - skill 1
 - skill 2
 - skill 3
 
-SKILLS TO LEARN:
-- skill 1
-- skill 2
-- skill 3
+📚 IMPORTANT SKILL GAPS
 
+SKILLS TO LEARN:
+1. [Specific missing skill]
+2. [Specific missing skill]
+3. [Specific missing skill]
+4. [Specific missing skill]
+5. [Specific missing skill]
+
+IMPORTANT:
+- Compare the student's CURRENT SKILLS with the skills required for the RECOMMENDED CAREER.
+- Only list skills that the student does NOT already have.
+- Never say "No missing skills detected".
+- Always provide at least 3 missing skills unless the student genuinely has all the required skills.
+- Use specific technical skills, not generic phrases.
+- For a GenAI Engineer career, consider skills such as Machine Learning, Deep Learning, NLP, LLMs, Prompt Engineering, RAG, LangChain, Vector Databases, Hugging Face, APIs, Git/GitHub, Docker, and Cloud.
+- Do not list a skill as missing if it is already present in the student's CURRENT SKILLS.
+- Keep the list relevant to the recommended career.
+
+IMPORTANT:
+You MUST include the exact heading "SKILLS TO LEARN:".
+Do not rename it.
+Do not omit it.
+Give 3-5 specific skills that the student should learn for the recommended career.
 🗺️ LEARNING ROADMAP
 Give exactly 6 steps.
 For each step include:

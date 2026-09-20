@@ -406,107 +406,149 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function displayMissingSkills(text) {
 
-        const container =
-            document.getElementById("missingSkills");
+    const container =
+        document.getElementById("missingSkills");
 
-        const readinessAI =
-            document.getElementById("readinessAI");
+    const readinessAI =
+        document.getElementById("readinessAI");
 
-        const aiProgress =
-            document.getElementById("aiProgress");
+    const aiProgress =
+        document.getElementById("aiProgress");
 
 
-        if (!container) {
-            return;
+    if (!container) {
+        return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    // Find the SKILLS TO LEARN section
+    const match = text.match(
+        /SKILLS\s+TO\s+LEARN\s*:?\s*([\s\S]*?)(?=\n\s*(?:🗺️?\s*)?(?:LEARNING\s+ROADMAP|ROADMAP|SUGGESTED\s+PROJECTS|PROJECTS|📄?\s*RESUME\s+IMPROVEMENTS|RESUME\s+IMPROVEMENTS|RESUME|AI\s+ANALYSIS)|$)/i
+    );
+
+
+    if (!match) {
+
+        container.innerHTML =
+            "<p>No missing skills detected.</p>";
+
+        if (readinessAI) {
+            readinessAI.textContent = "0%";
         }
 
-
-        container.innerHTML = "";
-
-
-        const match = text.match(
-            /SKILLS\s+TO\s+LEARN\s*:?\s*([\s\S]*?)(?=\n\s*(?:LEARNING\s+ROADMAP|ROADMAP|SUGGESTED\s+PROJECTS|PROJECTS|RESUME\s+IMPROVEMENTS|RESUME|AI\s+ANALYSIS|$))/i
-        );
-
-
-        if (!match) {
-
-            container.innerHTML =
-                "<p>No missing skills detected.</p>";
-
-            if (readinessAI) {
-                readinessAI.textContent =
-                    "100%";
-            }
-
-            if (aiProgress) {
-                aiProgress.style.width =
-                    "100%";
-            }
-
-            calculateOverallReadiness();
-
-            return;
+        if (aiProgress) {
+            aiProgress.style.width = "0%";
         }
 
+        calculateOverallReadiness();
 
-        const section =
-            match[1].trim();
-
-
-        const lines = section
-            .split("\n")
-            .map(function (line) {
-
-                return line
-                    .replace(/^[-•*]\s*/, "")
-                    .trim();
-
-            })
-            .filter(function (line) {
-
-                return line.length > 0;
-
-            });
+        return;
+    }
 
 
-        lines.forEach(function (skill) {
+    const section =
+        match[1].trim();
 
-            const item =
-                document.createElement("div");
 
-            item.className =
-                "skill-item missing";
+    // Convert the AI response into individual skill lines
+    const lines = section
+        .split(/\r?\n/)
+        .map(function (line) {
 
-            item.textContent =
-                "→ " + skill;
+            return line
+                // Remove bullets
+                .replace(/^\s*[-•*]\s*/, "")
+                // Remove numbered list: 1. / 2) / 3 -
+                .replace(/^\s*\d+\s*[\.\)\-:]\s*/, "")
+                // Remove extra markdown
+                .replace(/\*\*/g, "")
+                .trim();
 
-            container.appendChild(item);
+        })
+        .filter(function (line) {
+
+            return (
+                line.length > 0 &&
+                !line.match(/^IMPORTANT\s*:?$/i) &&
+                !line.match(/^SKILLS\s+TO\s+LEARN\s*:?\s*$/i)
+            );
 
         });
 
 
-        const score =
-            Math.max(
-                100 - lines.length * 10,
-                0
-            );
+    // Remove duplicate skills
+    const uniqueSkills = [];
 
+    lines.forEach(function (skill) {
 
-        if (readinessAI) {
-            readinessAI.textContent =
-                score + "%";
+        const normalized =
+            skill.toLowerCase();
+
+        const alreadyExists =
+            uniqueSkills.some(function (existing) {
+
+                return existing.toLowerCase() === normalized;
+
+            });
+
+        if (!alreadyExists) {
+            uniqueSkills.push(skill);
         }
 
-
-        if (aiProgress) {
-            aiProgress.style.width =
-                score + "%";
-        }
+    });
 
 
-        calculateOverallReadiness();
+    // Display skills
+    uniqueSkills.forEach(function (skill) {
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "skill-item missing";
+
+        item.textContent =
+            "→ " + skill;
+
+        container.appendChild(item);
+
+    });
+
+
+    // Calculate AI readiness
+    const skillCount =
+        uniqueSkills.length;
+
+
+    const score =
+        Math.max(
+            100 - skillCount * 10,
+            0
+        );
+
+
+    if (readinessAI) {
+
+        readinessAI.textContent =
+            score + "%";
+
     }
+
+
+    if (aiProgress) {
+
+        aiProgress.style.width =
+            score + "%";
+
+    }
+
+
+    calculateOverallReadiness();
+
+}
 
 
     // =====================================================
@@ -1329,5 +1371,25 @@ document.addEventListener("DOMContentLoaded", function () {
             .replace(/'/g, "&#039;");
     }
 
+
+});
+/* =====================================================
+   DOWNLOAD CAREER REPORT
+===================================================== */
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const downloadBtn =
+        document.getElementById("downloadReportBtn");
+
+    if (!downloadBtn) {
+        return;
+    }
+
+    downloadBtn.addEventListener("click", function () {
+
+        window.print();
+
+    });
 
 });
