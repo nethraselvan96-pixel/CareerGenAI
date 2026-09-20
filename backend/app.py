@@ -1,8 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from dotenv import load_dotenv
 from google import genai
 import os
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+FRONTEND_DIR = os.path.join(BASE_DIR, "frontend")
 
 load_dotenv()
 
@@ -18,7 +21,19 @@ def home():
     return jsonify({
         "message": "CareerGenAI backend is running 🚀"
     })
+@app.route("/")
+def home():
+    return send_from_directory(FRONTEND_DIR, "index.html")
 
+
+@app.route("/style.css")
+def style():
+    return send_from_directory(FRONTEND_DIR, "style.css")
+
+
+@app.route("/script.js")
+def script():
+    return send_from_directory(FRONTEND_DIR, "script.js")
 
 @app.route("/analyze", methods=["POST"])
 def analyze_career():
