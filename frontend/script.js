@@ -6,35 +6,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const startBtn = document.getElementById("startBtn");
     const careerForm = document.getElementById("careerForm");
+    const careerSection = document.getElementById("career-analysis");
+    const careerResult = document.getElementById("careerResult");
+    const loading = document.getElementById("aiLoading");
 
-    const careerSection =
-        document.getElementById("career-analysis");
-
-    const careerResult =
-        document.getElementById("careerResult");
-
-    const loading =
-        document.getElementById("loading");
 
     // =====================================================
     // START CAREER ANALYSIS BUTTON
     // =====================================================
 
     if (startBtn) {
-
         startBtn.addEventListener("click", function () {
 
             if (careerSection) {
-
                 careerSection.scrollIntoView({
                     behavior: "smooth"
                 });
-
             }
 
         });
-
     }
+
 
     // =====================================================
     // FORM SUBMIT
@@ -45,6 +37,7 @@ document.addEventListener("DOMContentLoaded", function () {
         careerForm.addEventListener("submit", async function (event) {
 
             event.preventDefault();
+
 
             // -------------------------------------------------
             // GET FORM VALUES
@@ -65,6 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const experience =
                 document.getElementById("experience")?.value || "";
 
+
             // -------------------------------------------------
             // SHOW LOADING
             // -------------------------------------------------
@@ -76,6 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (careerResult) {
                 careerResult.style.display = "none";
             }
+
 
             // -------------------------------------------------
             // SEND DATA TO FLASK
@@ -92,35 +87,33 @@ document.addEventListener("DOMContentLoaded", function () {
                     },
 
                     body: JSON.stringify({
-
                         education: education,
                         skills: skills,
                         interests: interests,
                         careerGoal: careerGoal,
                         experience: experience
-
                     })
 
                 });
 
-                if (!response.ok) {
 
+                if (!response.ok) {
                     throw new Error(
                         "Server error: " + response.status
                     );
-
                 }
+
 
                 const data = await response.json();
 
-                if (!data.success) {
 
+                if (!data.success) {
                     throw new Error(
                         data.error ||
                         "Career analysis failed."
                     );
-
                 }
+
 
                 // -------------------------------------------------
                 // BASIC PROFILE INFORMATION
@@ -146,12 +139,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     interests
                 );
 
+
                 // -------------------------------------------------
                 // AI RESULT
                 // -------------------------------------------------
 
-                const aiText =
-                    data.ai_result || "";
+                const aiText = data.ai_result || "";
+
 
                 // -------------------------------------------------
                 // BUILD RESULT SECTIONS
@@ -170,6 +164,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 displayResume(aiText);
 
                 displayAIResult(aiText);
+
 
                 // -------------------------------------------------
                 // SHOW RESULTS
@@ -194,9 +189,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 }
 
-            }
-
-            catch (error) {
+            } catch (error) {
 
                 console.error(
                     "CareerGenAI Error:",
@@ -218,6 +211,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
+
     // =====================================================
     // SET TEXT SAFELY
     // =====================================================
@@ -233,8 +227,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
         element.textContent =
             value || "--";
-
     }
+
 
     // =====================================================
     // CAREER MATCH SCORE
@@ -244,20 +238,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
         let score = 0;
 
-        const match =
-            text.match(
-                /Career\s*Match\s*Score\s*[:\-]?\s*(\d{1,3})\s*%/i
-            );
+
+        const match = text.match(
+            /Career\s+Match\s+Score\s*[:\-]?\s*(\d{1,3})\s*%/i
+        );
+
 
         if (match) {
-
-            score =
-                Math.min(
-                    parseInt(match[1]),
-                    100
-                );
-
+            score = Math.min(
+                parseInt(match[1]),
+                100
+            );
         }
+
 
         const careerScore =
             document.getElementById("careerScore");
@@ -266,56 +259,39 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("scoreProgress");
 
         const readinessCareer =
-            document.getElementById(
-                "readinessCareer"
-            );
+            document.getElementById("readinessCareer");
 
         const careerProgress =
-            document.getElementById(
-                "careerProgress"
-            );
+            document.getElementById("careerProgress");
 
-        // -------------------------------------------------
-        // SCORE TEXT
-        // -------------------------------------------------
 
         if (careerScore) {
-
             careerScore.textContent =
                 score + "%";
-
         }
 
-        // -------------------------------------------------
-        // MAIN SCORE PROGRESS
-        // -------------------------------------------------
 
         if (scoreProgress) {
-
             scoreProgress.style.width =
                 score + "%";
-
         }
 
-        // -------------------------------------------------
-        // READINESS DASHBOARD
-        // -------------------------------------------------
 
         if (readinessCareer) {
-
             readinessCareer.textContent =
                 score + "%";
-
         }
+
 
         if (careerProgress) {
-
             careerProgress.style.width =
                 score + "%";
-
         }
 
+
+        calculateOverallReadiness();
     }
+
 
     // =====================================================
     // CURRENT SKILLS
@@ -324,34 +300,27 @@ document.addEventListener("DOMContentLoaded", function () {
     function displayCurrentSkills(text) {
 
         const container =
-            document.getElementById(
-                "currentSkills"
-            );
+            document.getElementById("currentSkills");
 
         const readinessSkills =
-            document.getElementById(
-                "readinessSkills"
-            );
+            document.getElementById("readinessSkills");
 
         const skillsProgress =
-            document.getElementById(
-                "skillsProgress"
-            );
+            document.getElementById("skillsProgress");
+
 
         if (!container) {
             return;
         }
 
+
         container.innerHTML = "";
 
-        // -------------------------------------------------
-        // FIND CURRENT SKILLS SECTION
-        // -------------------------------------------------
 
-        const match =
-            text.match(
-                /CURRENT\s+SKILLS\s*:?\s*([\s\S]*?)(?=\n\s*(?:SKILLS\s+TO\s+LEARN|MISSING\s+SKILLS|ROADMAP|PROJECTS|RESUME|AI\s+ANALYSIS|$))/i
-            );
+        const match = text.match(
+            /CURRENT\s+SKILLS\s*:?\s*([\s\S]*?)(?=\n\s*(?:SKILLS\s+TO\s+LEARN|MISSING\s+SKILLS|LEARNING\s+ROADMAP|ROADMAP|SUGGESTED\s+PROJECTS|PROJECTS|RESUME\s+IMPROVEMENTS|RESUME|$))/i
+        );
+
 
         if (!match) {
 
@@ -366,28 +335,31 @@ document.addEventListener("DOMContentLoaded", function () {
                 skillsProgress.style.width = "0%";
             }
 
-            return;
+            calculateOverallReadiness();
 
+            return;
         }
+
 
         const section =
             match[1].trim();
 
-        const lines =
-            section
-                .split("\n")
-                .map(function (line) {
-                    return line
-                        .replace(/^[-•*]\s*/, "")
-                        .trim();
-                })
-                .filter(function (line) {
-                    return line.length > 0;
-                });
 
-        // -------------------------------------------------
-        // DISPLAY SKILLS
-        // -------------------------------------------------
+        const lines = section
+            .split("\n")
+            .map(function (line) {
+
+                return line
+                    .replace(/^[-•*]\s*/, "")
+                    .trim();
+
+            })
+            .filter(function (line) {
+
+                return line.length > 0;
+
+            });
+
 
         lines.forEach(function (skill) {
 
@@ -404,9 +376,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         });
 
-        // -------------------------------------------------
-        // CALCULATE TECHNICAL SKILL READINESS
-        // -------------------------------------------------
 
         const score =
             Math.min(
@@ -414,21 +383,22 @@ document.addEventListener("DOMContentLoaded", function () {
                 100
             );
 
-        if (readinessSkills) {
 
+        if (readinessSkills) {
             readinessSkills.textContent =
                 score + "%";
-
         }
+
 
         if (skillsProgress) {
-
             skillsProgress.style.width =
                 score + "%";
-
         }
 
+
+        calculateOverallReadiness();
     }
+
 
     // =====================================================
     // MISSING SKILLS
@@ -437,34 +407,27 @@ document.addEventListener("DOMContentLoaded", function () {
     function displayMissingSkills(text) {
 
         const container =
-            document.getElementById(
-                "missingSkills"
-            );
+            document.getElementById("missingSkills");
 
         const readinessAI =
-            document.getElementById(
-                "readinessAI"
-            );
+            document.getElementById("readinessAI");
 
         const aiProgress =
-            document.getElementById(
-                "aiProgress"
-            );
+            document.getElementById("aiProgress");
+
 
         if (!container) {
             return;
         }
 
+
         container.innerHTML = "";
 
-        // -------------------------------------------------
-        // FIND SKILLS TO LEARN SECTION
-        // -------------------------------------------------
 
-        const match =
-            text.match(
-                /SKILLS\s+TO\s+LEARN\s*:?\s*([\s\S]*?)(?=\n\s*(?:ROADMAP|PROJECTS|RESUME|AI\s+ANALYSIS|$))/i
-            );
+        const match = text.match(
+            /SKILLS\s+TO\s+LEARN\s*:?\s*([\s\S]*?)(?=\n\s*(?:LEARNING\s+ROADMAP|ROADMAP|SUGGESTED\s+PROJECTS|PROJECTS|RESUME\s+IMPROVEMENTS|RESUME|AI\s+ANALYSIS|$))/i
+        );
+
 
         if (!match) {
 
@@ -472,37 +435,40 @@ document.addEventListener("DOMContentLoaded", function () {
                 "<p>No missing skills detected.</p>";
 
             if (readinessAI) {
-                readinessAI.textContent = "100%";
+                readinessAI.textContent =
+                    "100%";
             }
 
             if (aiProgress) {
-                aiProgress.style.width = "100%";
+                aiProgress.style.width =
+                    "100%";
             }
 
             calculateOverallReadiness();
 
             return;
-
         }
+
 
         const section =
             match[1].trim();
 
-        const lines =
-            section
-                .split("\n")
-                .map(function (line) {
-                    return line
-                        .replace(/^[-•*]\s*/, "")
-                        .trim();
-                })
-                .filter(function (line) {
-                    return line.length > 0;
-                });
 
-        // -------------------------------------------------
-        // DISPLAY MISSING SKILLS
-        // -------------------------------------------------
+        const lines = section
+            .split("\n")
+            .map(function (line) {
+
+                return line
+                    .replace(/^[-•*]\s*/, "")
+                    .trim();
+
+            })
+            .filter(function (line) {
+
+                return line.length > 0;
+
+            });
+
 
         lines.forEach(function (skill) {
 
@@ -519,9 +485,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         });
 
-        // -------------------------------------------------
-        // AI READINESS
-        // -------------------------------------------------
 
         const score =
             Math.max(
@@ -529,23 +492,22 @@ document.addEventListener("DOMContentLoaded", function () {
                 0
             );
 
-        if (readinessAI) {
 
+        if (readinessAI) {
             readinessAI.textContent =
                 score + "%";
-
         }
+
 
         if (aiProgress) {
-
             aiProgress.style.width =
                 score + "%";
-
         }
 
-        calculateOverallReadiness();
 
+        calculateOverallReadiness();
     }
+
 
     // =====================================================
     // OVERALL READINESS
@@ -578,24 +540,29 @@ document.addEventListener("DOMContentLoaded", function () {
                 "overallProgress"
             );
 
+
         if (!overall) {
             return;
         }
+
 
         const careerScore =
             parseInt(
                 career?.textContent || "0"
             ) || 0;
 
+
         const skillsScore =
             parseInt(
                 skills?.textContent || "0"
             ) || 0;
 
+
         const aiScore =
             parseInt(
                 ai?.textContent || "0"
             ) || 0;
+
 
         const result =
             Math.round(
@@ -606,16 +573,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 ) / 3
             );
 
-        // -------------------------------------------------
-        // OVERALL NUMBER
-        // -------------------------------------------------
 
         overall.textContent =
             result + "%";
 
-        // -------------------------------------------------
-        // OVERALL PROGRESS BAR
-        // -------------------------------------------------
 
         if (overallProgress) {
 
@@ -626,8 +587,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
+
     // =====================================================
-    // ROADMAP
+    // LEARNING ROADMAP
     // =====================================================
 
     function displayRoadmap(text) {
@@ -637,16 +599,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 "roadmapContainer"
             );
 
+
         if (!container) {
             return;
         }
 
+
         container.innerHTML = "";
 
-        const match =
-            text.match(
-                /ROADMAP\s*:?\s*([\s\S]*?)(?=\n\s*(?:PROJECTS|RESUME|AI\s+ANALYSIS|$))/i
-            );
+
+        const match = text.match(
+            /LEARNING\s+ROADMAP\s*:?\s*([\s\S]*?)(?=SUGGESTED\s+PROJECTS|RESUME\s+IMPROVEMENTS|$)/i
+        );
+
 
         if (!match) {
 
@@ -654,39 +619,183 @@ document.addEventListener("DOMContentLoaded", function () {
                 "<p>Roadmap information unavailable.</p>";
 
             return;
-
         }
 
-        const section =
+
+        let section =
             match[1].trim();
 
-        const lines =
+
+        if (!/^Step\s+1/i.test(section)) {
+            section =
+                "Step 1\n" + section;
+        }
+
+
+        const steps =
             section
-                .split("\n")
-                .map(function (line) {
-                    return line.trim();
+                .split(
+                    /(?=Step\s+\d+\s*:?\s*)/i
+                )
+                .map(function (step) {
+                    return step.trim();
                 })
-                .filter(function (line) {
-                    return line.length > 0;
+                .filter(function (step) {
+                    return /^Step\s+\d+/i.test(step);
                 });
 
-        lines.forEach(function (line, index) {
+
+        steps.forEach(function (step, index) {
+
+            const lines =
+                step
+                    .split("\n")
+                    .map(function (line) {
+                        return line.trim();
+                    })
+                    .filter(function (line) {
+                        return line.length > 0;
+                    });
+
+
+            const stepNumber =
+                index + 1;
+
+
+            const details = {
+                skill: "",
+                practice: "",
+                outcome: ""
+            };
+
+
+            lines.forEach(function (line) {
+
+                const cleanLine =
+                    line
+                        .replace(/^[-•*]\s*/, "")
+                        .replace(/\*\*/g, "")
+                        .trim();
+
+
+                if (
+                    /skill\s+to\s+learn/i.test(
+                        cleanLine
+                    )
+                ) {
+
+                    details.skill =
+                        cleanLine
+                            .replace(
+                                /^.*?skill\s+to\s+learn\s*:?\s*/i,
+                                ""
+                            )
+                            .trim();
+
+                }
+
+                else if (
+                    /what\s+to\s+practice/i.test(
+                        cleanLine
+                    )
+                ) {
+
+                    details.practice =
+                        cleanLine
+                            .replace(
+                                /^.*?what\s+to\s+practice\s*:?\s*/i,
+                                ""
+                            )
+                            .trim();
+
+                }
+
+                else if (
+                    /expected\s+outcome/i.test(
+                        cleanLine
+                    )
+                ) {
+
+                    details.outcome =
+                        cleanLine
+                            .replace(
+                                /^.*?expected\s+outcome\s*:?\s*/i,
+                                ""
+                            )
+                            .trim();
+
+                }
+
+            });
+
 
             const card =
                 document.createElement("div");
 
+
             card.className =
                 "roadmap-card";
 
+
             card.innerHTML = `
                 <div class="roadmap-number">
-                    ${index + 1}
+                    ${stepNumber}
                 </div>
 
                 <div class="roadmap-content">
-                    ${formatRoadmapLine(line)}
+
+                    <h3>
+                        Step ${stepNumber}
+                    </h3>
+
+                    <div class="roadmap-detail">
+
+                        <strong>
+                            🎯 Skill to learn
+                        </strong>
+
+                        <span>
+                            ${escapeHTML(
+                                details.skill ||
+                                "Not specified"
+                            )}
+                        </span>
+
+                    </div>
+
+                    <div class="roadmap-detail">
+
+                        <strong>
+                            🛠️ What to practice
+                        </strong>
+
+                        <span>
+                            ${escapeHTML(
+                                details.practice ||
+                                "Not specified"
+                            )}
+                        </span>
+
+                    </div>
+
+                    <div class="roadmap-detail">
+
+                        <strong>
+                            ✅ Expected outcome
+                        </strong>
+
+                        <span>
+                            ${escapeHTML(
+                                details.outcome ||
+                                "Not specified"
+                            )}
+                        </span>
+
+                    </div>
+
                 </div>
             `;
+
 
             container.appendChild(card);
 
@@ -694,21 +803,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
-    // =====================================================
-    // ROADMAP FORMATTER
-    // =====================================================
-
-    function formatRoadmapLine(line) {
-
-        return escapeHTML(
-            line
-                .replace(
-                    /^[-•*]\s*/,
-                    ""
-                )
-        );
-
-    }
 
     // =====================================================
     // PROJECTS
@@ -721,16 +815,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 "projectsContainer"
             );
 
+
         if (!container) {
             return;
         }
 
+
         container.innerHTML = "";
 
-        const match =
-            text.match(
-                /PROJECTS?\s*:?\s*([\s\S]*?)(?=\n\s*(?:RESUME|AI\s+ANALYSIS|$))/i
-            );
+
+        const match = text.match(
+            /SUGGESTED\s+PROJECTS\s*:?\s*([\s\S]*?)(?=RESUME\s+IMPROVEMENTS|$)/i
+        );
+
 
         if (!match) {
 
@@ -738,35 +835,175 @@ document.addEventListener("DOMContentLoaded", function () {
                 "<p>Project suggestions unavailable.</p>";
 
             return;
-
         }
+
 
         const section =
             match[1].trim();
 
-        const lines =
+
+        const projects =
             section
-                .split("\n")
-                .map(function (line) {
-                    return line
-                        .replace(/^[-•*]\s*/, "")
-                        .trim();
+                .split(
+                    /(?=Project\s+\d+\s*:?\s*)/i
+                )
+                .map(function (project) {
+                    return project.trim();
                 })
-                .filter(function (line) {
-                    return line.length > 0;
+                .filter(function (project) {
+                    return /^Project\s+\d+/i.test(project);
                 });
 
-        lines.forEach(function (project) {
+
+        projects.forEach(function (project, index) {
+
+            const lines =
+                project
+                    .split("\n")
+                    .map(function (line) {
+
+                        return line
+                            .replace(/^[-•*]\s*/, "")
+                            .replace(/\*\*/g, "")
+                            .trim();
+
+                    })
+                    .filter(function (line) {
+
+                        return line.length > 0;
+
+                    });
+
+
+            if (lines.length === 0) {
+                return;
+            }
+
+
+            const title =
+                lines[0]
+                    .replace(
+                        /^Project\s+\d+\s*:?\s*/i,
+                        ""
+                    )
+                    .trim();
+
+
+            let description = "";
+            let technologies = "";
+            let useful = "";
+
+
+            lines.slice(1).forEach(function (line) {
+
+                if (
+                    /what\s+it\s+does/i.test(line)
+                ) {
+
+                    description =
+                        line
+                            .replace(
+                                /^.*?what\s+it\s+does\s*:?\s*/i,
+                                ""
+                            )
+                            .trim();
+
+                }
+
+                else if (
+                    /technologies/i.test(line)
+                ) {
+
+                    technologies =
+                        line
+                            .replace(
+                                /^.*?technologies\s*:?\s*/i,
+                                ""
+                            )
+                            .trim();
+
+                }
+
+                else if (
+                    /why\s+it\s+is\s+useful/i.test(line)
+                ) {
+
+                    useful =
+                        line
+                            .replace(
+                                /^.*?why\s+it\s+is\s+useful\s*:?\s*/i,
+                                ""
+                            )
+                            .trim();
+
+                }
+
+            });
+
 
             const card =
                 document.createElement("div");
 
+
             card.className =
                 "project-card";
 
+
             card.innerHTML = `
-                <h3>${escapeHTML(project)}</h3>
+                <div class="project-number">
+                    PROJECT ${index + 1}
+                </div>
+
+                <h3>
+                    ${escapeHTML(title)}
+                </h3>
+
+                <div class="project-detail">
+
+                    <strong>
+                        💡 What it does
+                    </strong>
+
+                    <p>
+                        ${escapeHTML(
+                            description ||
+                            "Not specified"
+                        )}
+                    </p>
+
+                </div>
+
+                <div class="project-detail">
+
+                    <strong>
+                        🛠️ Technologies
+                    </strong>
+
+                    <p>
+                        ${escapeHTML(
+                            technologies ||
+                            "Not specified"
+                        )}
+                    </p>
+
+                </div>
+
+                <div class="project-detail">
+
+                    <strong>
+                        🚀 Why it is useful
+                    </strong>
+
+                    <p>
+                        ${escapeHTML(
+                            useful ||
+                            "Not specified"
+                        )}
+                    </p>
+
+                </div>
             `;
+
 
             container.appendChild(card);
 
@@ -774,8 +1011,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     }
 
+
     // =====================================================
-    // RESUME
+    // RESUME IMPROVEMENTS
     // =====================================================
 
     function displayResume(text) {
@@ -785,16 +1023,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 "resumeContainer"
             );
 
+
         if (!container) {
             return;
         }
 
+
         container.innerHTML = "";
 
-        const match =
-            text.match(
-                /RESUME\s*:?\s*([\s\S]*?)(?=\n\s*(?:AI\s+ANALYSIS|$))/i
-            );
+
+        const match = text.match(
+            /RESUME\s+IMPROVEMENTS\s*:?\s*([\s\S]*?)(?=Career\s+Readiness\s+Dashboard|$)/i
+        );
+
 
         if (!match) {
 
@@ -802,11 +1043,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 "<p>Resume recommendations unavailable.</p>";
 
             return;
-
         }
+
 
         const section =
             match[1].trim();
+
 
         const lines =
             section
@@ -818,25 +1060,106 @@ document.addEventListener("DOMContentLoaded", function () {
                     return line.length > 0;
                 });
 
-        lines.forEach(function (line) {
 
-            const item =
+        lines.forEach(function (line, index) {
+
+            const cleanLine =
+                line
+                    .replace(/^[-•*]\s*/, "")
+                    .replace(/^\d+[\.\)]\s*/, "")
+                    .replace(/\*\*/g, "")
+                    .trim();
+
+
+            if (!cleanLine) {
+                return;
+            }
+
+
+            let title =
+                cleanLine;
+
+            let description =
+                "";
+
+
+            const colonIndex =
+                cleanLine.indexOf(":");
+
+
+            if (colonIndex !== -1) {
+
+                title =
+                    cleanLine
+                        .substring(
+                            0,
+                            colonIndex
+                        )
+                        .trim();
+
+                description =
+                    cleanLine
+                        .substring(
+                            colonIndex + 1
+                        )
+                        .trim();
+
+            }
+
+
+            const card =
                 document.createElement("div");
 
-            item.className =
-                "resume-item";
 
-            item.innerHTML =
-                formatBulletText(line);
+            card.className =
+                "resume-flashcard";
 
-            container.appendChild(item);
+
+            card.innerHTML = `
+                <div class="resume-card-top">
+
+                    <div class="resume-card-number">
+                        ${String(
+                            index + 1
+                        ).padStart(2, "0")}
+                    </div>
+
+                    <div class="resume-card-badge">
+                        RESUME TIP
+                    </div>
+
+                </div>
+
+                <div class="resume-card-icon">
+                    📄
+                </div>
+
+                <h3>
+                    ${escapeHTML(title)}
+                </h3>
+
+                <p>
+                    ${escapeHTML(
+                        description ||
+                        "Improve this section of your resume to make your profile clearer and more professional."
+                    )}
+                </p>
+
+                <div class="resume-card-footer">
+
+    
+            `;
+
+
+            container.appendChild(card);
 
         });
 
     }
 
+
     // =====================================================
-    // AI RESULT
+    // AI CAREER INSIGHT
     // =====================================================
 
     function displayAIResult(text) {
@@ -846,60 +1169,165 @@ document.addEventListener("DOMContentLoaded", function () {
                 "aiResult"
             );
 
+
         if (!container) {
             return;
         }
 
-        container.innerHTML =
-            escapeHTML(text)
-                .replace(/\n/g, "<br>");
+
+        container.innerHTML = "";
+
+
+        const careerMatch =
+            text.match(
+                /RECOMMENDED\s+CAREER\s*:?\s*([\s\S]*?)(?=CAREER\s+MATCH\s+SCORE|$)/i
+            );
+
+
+        const scoreMatch =
+            text.match(
+                /CAREER\s+MATCH\s+SCORE\s*[:\-]?\s*(\d{1,3})\s*%/i
+            );
+
+
+        const whyMatch =
+            text.match(
+                /WHY\s+THIS\s+CAREER\s+FITS\s*:?\s*([\s\S]*?)(?=CURRENT\s+SKILL\s+STRENGTHS|CURRENT\s+SKILLS|IMPORTANT\s+SKILL\s+GAPS|SKILLS\s+TO\s+LEARN|LEARNING\s+ROADMAP|SUGGESTED\s+PROJECTS|RESUME\s+IMPROVEMENTS|$)/i
+            );
+
+
+        const career =
+            careerMatch
+                ? careerMatch[1]
+                    .trim()
+                    .replace(/\*\*/g, "")
+                : "Career recommendation unavailable";
+
+
+        const score =
+            scoreMatch
+                ? scoreMatch[1]
+                : "0";
+
+
+        const why =
+            whyMatch
+                ? whyMatch[1]
+                    .trim()
+                    .replace(/\*\*/g, "")
+                : "Career fit analysis unavailable.";
+
+
+        const whyPoints =
+            why
+                .split("\n")
+                .map(function (line) {
+
+                    return line
+                        .replace(/^[-•*]\s*/, "")
+                        .trim();
+
+                })
+                .filter(function (line) {
+
+                    return line.length > 0;
+
+                });
+
+
+        let whyHTML = "";
+
+
+        whyPoints.forEach(function (point) {
+
+            whyHTML += `
+                <div class="ai-insight-point">
+
+                    <span>
+                        ✓
+                    </span>
+
+                    <p>
+                        ${escapeHTML(point)}
+                    </p>
+
+                </div>
+            `;
+
+        });
+
+
+        container.innerHTML = `
+            <div class="ai-summary-card">
+
+                <div class="ai-summary-header">
+
+                    <div>
+
+                        <span class="ai-label">
+                            🤖 AI CAREER INSIGHT
+                        </span>
+
+                        <h3>
+                            ${escapeHTML(career)}
+                        </h3>
+
+                    </div>
+
+                    <div class="ai-match-score">
+
+                        <span>
+                            ${escapeHTML(score)}%
+                        </span>
+
+                        <small>
+                            Match
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <div class="ai-summary-divider"></div>
+
+
+                <div class="ai-fit-section">
+
+                    <h4>
+                        💡 Why this career fits you
+                    </h4>
+
+                    <div class="ai-insight-list">
+                        ${whyHTML}
+                    </div>
+
+                </div>
+
+            </div>
+        `;
 
     }
 
-    // =====================================================
-    // REMOVE DUPLICATE SECTIONS
-    // =====================================================
-
-    function removeDuplicateSections(text) {
-
-        return text
-            .replace(
-                /CURRENT\s+SKILLS[\s\S]*?(?=SKILLS\s+TO\s+LEARN)/gi,
-                ""
-            )
-            .trim();
-
-    }
 
     // =====================================================
-    // BULLET FORMATTER
-    // =====================================================
-
-    function formatBulletText(text) {
-
-        return escapeHTML(
-            text
-                .replace(
-                    /^[-•*]\s*/,
-                    ""
-                )
-        );
-
-    }
-
-    // =====================================================
-    // HTML ESCAPE
+    // ESCAPE HTML
     // =====================================================
 
     function escapeHTML(value) {
 
         return String(value)
-            .replace(/&/g, "&amp;")
-            .replace(/</g, "&lt;")
-            .replace(/>/g, "&gt;")
-            .replace(/"/g, "&quot;")
-            .replace(/'/g, "&#039;");
 
+            .replace(/&/g, "&amp;")
+
+            .replace(/</g, "&lt;")
+
+            .replace(/>/g, "&gt;")
+
+            .replace(/"/g, "&quot;")
+
+            .replace(/'/g, "&#039;");
     }
+
 
 });
