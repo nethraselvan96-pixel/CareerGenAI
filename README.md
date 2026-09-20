@@ -59,7 +59,25 @@ Allows users to print or save their personalized CareerGenAI analysis as a PDF r
 
 ---
 
-## 🧠 How It Works
+## 🧠 How It Works## 📸 Screenshots
+
+### 🏠 Home Page
+
+![CareerGenAI Home Page](screenshots/home.png)
+
+### 📝 Career Analysis
+
+![Career Analysis Form](screenshots/analysis-form.png)
+
+### 🎯 AI Career Results
+
+![Career Analysis Results](screenshots/career-results.png)
+
+### 📊 Career Dashboard
+
+![Career Readiness Dashboard](screenshots/career-dashboard.png)
+
+---
 
 ```text
 Student Profile
