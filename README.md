@@ -18,11 +18,11 @@ and generates personalized AI-powered career guidance.
 
 ### 🎯 Career Recommendation
 
-Analyzes the student's profile and provides a career direction based on their education, skills, interests, experience, and career goal.
+Analyzes the student's education, skills, interests, experience, and career goals to provide a personalized career direction.
 
 ### 📊 Career Match Score
 
-Generates a percentage-based career match score to show how closely the student's current profile aligns with the recommended career.
+Generates a percentage-based career match score showing how closely the student's current profile aligns with the recommended career.
 
 ### 💪 Skill Gap Analysis
 
@@ -58,31 +58,12 @@ Displays multiple career-readiness indicators:
 Allows users to print or save their personalized CareerGenAI analysis as a PDF report.
 
 ---
+
 ## 🏗️ System Architecture
 
 ![CareerGenAI System Architecture](screenshots/architecture.png)
 
----
-## 🧠 How It Works## 📸 Screenshots
-
-
-### 🏠 Home Page
-
-![CareerGenAI Home Page](screenshots/home.png)
-
-### 📝 Career Analysis
-
-![Career Analysis Form](screenshots/analysis-form.png)
-
-### 🎯 AI Career Results
-
-![Career Analysis Results](screenshots/career-results.png)
-
-### 📊 Career Dashboard
-
-![Career Readiness Dashboard](screenshots/career-dashboard.png)
-
----
+### 🧠 How It Works
 
 ```text
 Student Profile
@@ -109,6 +90,26 @@ Career Readiness Dashboard
        ↓
 Career Report
 ```
+
+---
+
+## 📸 Screenshots
+
+### 🏠 Home Page
+
+![CareerGenAI Home Page](screenshots/home.png)
+
+### 📝 Career Analysis
+
+![Career Analysis Form](screenshots/analysis-form.png)
+
+### 🎯 AI Career Results
+
+![Career Analysis Results](screenshots/career-results.png)
+
+### 📊 Career Dashboard
+
+![Career Readiness Dashboard](screenshots/career-dashboard.png)
 
 ---
 
@@ -153,6 +154,13 @@ CareerGenAI/
 │   ├── index.html
 │   ├── style.css
 │   └── script.js
+│
+├── screenshots/
+│   ├── architecture.png
+│   ├── home.png
+│   ├── analysis-form.png
+│   ├── career-results.png
+│   └── career-dashboard.png
 │
 ├── .gitignore
 ├── README.md
@@ -227,7 +235,7 @@ The application will run locally at:
 http://127.0.0.1:5000
 ```
 
-Open that address in your browser.
+Open the address in your browser.
 
 ---
 
