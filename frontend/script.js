@@ -1,14 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     // =====================================================
-    // GET HTML ELEMENTS
+    // ELEMENTS
     // =====================================================
 
-    const startBtn =
-        document.getElementById("startBtn");
-
-    const careerForm =
-        document.getElementById("careerForm");
+    const startBtn = document.getElementById("startBtn");
+    const careerForm = document.getElementById("careerForm");
 
     const careerSection =
         document.getElementById("career-analysis");
@@ -16,359 +13,213 @@ document.addEventListener("DOMContentLoaded", function () {
     const careerResult =
         document.getElementById("careerResult");
 
-    const aiLoading =
-        document.getElementById("aiLoading");
-
-    const loadingText =
-        document.getElementById("loadingText");
-
+    const loading =
+        document.getElementById("loading");
 
     // =====================================================
     // START CAREER ANALYSIS BUTTON
     // =====================================================
 
-    if (startBtn && careerSection) {
+    if (startBtn) {
 
         startBtn.addEventListener("click", function () {
 
-            careerSection.scrollIntoView({
-                behavior: "smooth",
-                block: "start"
-            });
+            if (careerSection) {
+
+                careerSection.scrollIntoView({
+                    behavior: "smooth"
+                });
+
+            }
 
         });
 
     }
 
-
     // =====================================================
-    // CAREER FORM SUBMIT
+    // FORM SUBMIT
     // =====================================================
 
     if (careerForm) {
 
-        careerForm.addEventListener(
-            "submit",
-            async function (event) {
+        careerForm.addEventListener("submit", async function (event) {
 
-                event.preventDefault();
+            event.preventDefault();
 
-                console.log("Career form submitted");
+            // -------------------------------------------------
+            // GET FORM VALUES
+            // -------------------------------------------------
 
+            const education =
+                document.getElementById("education")?.value || "";
 
-                // =================================================
-                // SHOW LOADING
-                // =================================================
+            const skills =
+                document.getElementById("skills")?.value || "";
 
-                if (aiLoading) {
-                    aiLoading.style.display = "block";
+            const interests =
+                document.getElementById("interests")?.value || "";
+
+            const careerGoal =
+                document.getElementById("careerGoal")?.value || "";
+
+            const experience =
+                document.getElementById("experience")?.value || "";
+
+            // -------------------------------------------------
+            // SHOW LOADING
+            // -------------------------------------------------
+
+            if (loading) {
+                loading.style.display = "block";
+            }
+
+            if (careerResult) {
+                careerResult.style.display = "none";
+            }
+
+            // -------------------------------------------------
+            // SEND DATA TO FLASK
+            // -------------------------------------------------
+
+            try {
+
+                const response = await fetch("/analyze", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    body: JSON.stringify({
+
+                        education: education,
+                        skills: skills,
+                        interests: interests,
+                        careerGoal: careerGoal,
+                        experience: experience
+
+                    })
+
+                });
+
+                if (!response.ok) {
+
+                    throw new Error(
+                        "Server error: " + response.status
+                    );
+
+                }
+
+                const data = await response.json();
+
+                if (!data.success) {
+
+                    throw new Error(
+                        data.error ||
+                        "Career analysis failed."
+                    );
+
+                }
+
+                // -------------------------------------------------
+                // BASIC PROFILE INFORMATION
+                // -------------------------------------------------
+
+                setText(
+                    "resultCareer",
+                    careerGoal
+                );
+
+                setText(
+                    "resultExperience",
+                    experience
+                );
+
+                setText(
+                    "resultSkills",
+                    skills
+                );
+
+                setText(
+                    "resultInterests",
+                    interests
+                );
+
+                // -------------------------------------------------
+                // AI RESULT
+                // -------------------------------------------------
+
+                const aiText =
+                    data.ai_result || "";
+
+                // -------------------------------------------------
+                // BUILD RESULT SECTIONS
+                // -------------------------------------------------
+
+                calculateCareerScore(aiText);
+
+                displayCurrentSkills(aiText);
+
+                displayMissingSkills(aiText);
+
+                displayRoadmap(aiText);
+
+                displayProjects(aiText);
+
+                displayResume(aiText);
+
+                displayAIResult(aiText);
+
+                // -------------------------------------------------
+                // SHOW RESULTS
+                // -------------------------------------------------
+
+                if (loading) {
+                    loading.style.display = "none";
                 }
 
                 if (careerResult) {
-                    careerResult.style.display = "none";
-                }
 
-                if (loadingText) {
+                    careerResult.style.display = "block";
 
-                    loadingText.textContent =
-                        "🤖 CareerGenAI is analyzing your profile...";
-
-                }
-
-
-                // =================================================
-                // GET FORM VALUES
-                // =================================================
-
-                const educationElement =
-                    document.getElementById("education");
-
-                const skillsElement =
-                    document.getElementById("skills");
-
-                const interestsElement =
-                    document.getElementById("interests");
-
-                const careerGoalElement =
-                    document.getElementById("careerGoal");
-
-                const experienceElement =
-                    document.getElementById("experience");
-
-
-                const education =
-                    educationElement
-                        ? educationElement.value
-                        : "";
-
-                const skills =
-                    skillsElement
-                        ? skillsElement.value
-                        : "";
-
-                const interests =
-                    interestsElement
-                        ? interestsElement.value
-                        : "";
-
-                const careerGoal =
-                    careerGoalElement
-                        ? careerGoalElement.value
-                        : "";
-
-                const experience =
-                    experienceElement
-                        ? experienceElement.value
-                        : "";
-
-
-                // =================================================
-                // CREATE DATA
-                // =================================================
-
-                const careerData = {
-
-                    education: education,
-
-                    skills: skills,
-
-                    interests: interests,
-
-                    careerGoal: careerGoal,
-
-                    experience: experience
-
-                };
-
-
-                console.log(
-                    "Sending data:",
-                    careerData
-                );
-
-
-                // =================================================
-                // SEND DATA TO FLASK
-                // =================================================
-
-                try {
-
-                    const response =
-                        await fetch(
-                            "/analyze",
-                            {
-                                method: "POST",
-
-                                headers: {
-                                    "Content-Type":
-                                        "application/json"
-                                },
-
-                                body:
-                                    JSON.stringify(
-                                        careerData
-                                    )
-                            }
-                        );
-
-
-                    console.log(
-                        "Backend response status:",
-                        response.status
-                    );
-
-
-                    // =================================================
-                    // CHECK SERVER
-                    // =================================================
-
-                    if (!response.ok) {
-
-                        throw new Error(
-                            "Server error: " +
-                            response.status
-                        );
-
-                    }
-
-
-                    // =================================================
-                    // GET JSON
-                    // =================================================
-
-                    const data =
-                        await response.json();
-
-
-                    console.log(
-                        "Backend data:",
-                        data
-                    );
-
-
-                    // =================================================
-                    // CHECK SUCCESS
-                    // =================================================
-
-                    if (!data.success) {
-
-                        throw new Error(
-                            data.message ||
-                            "Career analysis failed."
-                        );
-
-                    }
-
-
-                    // =================================================
-                    // DISPLAY PROFILE
-                    // =================================================
-
-                    setText(
-                        "resultCareer",
-                        data.profile &&
-                        data.profile.careerGoal
-                            ? data.profile.careerGoal
-                            : careerGoal
-                    );
-
-
-                    setText(
-                        "resultExperience",
-                        data.profile &&
-                        data.profile.experience
-                            ? data.profile.experience
-                            : experience
-                    );
-
-
-                    setText(
-                        "resultSkills",
-                        data.profile &&
-                        data.profile.skills
-                            ? data.profile.skills
-                            : skills
-                    );
-
-
-                    setText(
-                        "resultInterests",
-                        data.profile &&
-                        data.profile.interests
-                            ? data.profile.interests
-                            : interests
-                    );
-
-
-                    // =================================================
-                    // AI TEXT
-                    // =================================================
-
-                    const aiText =
-                        data.ai_result || "";
-
-
-                    console.log(
-                        "AI result:",
-                        aiText
-                    );
-
-
-                    // =================================================
-                    // DISPLAY RESULTS
-                    // =================================================
-
-                    calculateCareerScore(
-                        aiText
-                    );
-
-                    displayCurrentSkills(
-                        aiText
-                    );
-
-                    displayMissingSkills(
-                        aiText
-                    );
-
-                    displayRoadmap(
-                        aiText
-                    );
-
-                    displayProjects(
-                        aiText
-                    );
-
-                    displayResume(
-                        aiText
-                    );
-
-                    displayAIResult(
-                        aiText
-                    );
-
-
-                    // =================================================
-                    // HIDE LOADING
-                    // =================================================
-
-                    if (aiLoading) {
-
-                        aiLoading.style.display =
-                            "none";
-
-                    }
-
-
-                    // =================================================
-                    // SHOW RESULT
-                    // =================================================
-
-                    if (careerResult) {
-
-                        careerResult.style.display =
-                            "block";
+                    setTimeout(function () {
 
                         careerResult.scrollIntoView({
                             behavior: "smooth",
                             block: "start"
                         });
 
-                    }
-
-                }
-
-                catch (error) {
-
-                    console.error(
-                        "CareerGenAI Error:",
-                        error
-                    );
-
-
-                    if (aiLoading) {
-
-                        aiLoading.style.display =
-                            "none";
-
-                    }
-
-
-                    alert(
-                        "Unable to connect to CareerGenAI backend.\n\n" +
-                        "Please make sure Flask is running."
-                    );
+                    }, 150);
 
                 }
 
             }
 
-        );
+            catch (error) {
+
+                console.error(
+                    "CareerGenAI Error:",
+                    error
+                );
+
+                if (loading) {
+                    loading.style.display = "none";
+                }
+
+                alert(
+                    "Something went wrong while analyzing your career.\n\n" +
+                    error.message
+                );
+
+            }
+
+        });
 
     }
 
-
     // =====================================================
-    // SET TEXT
+    // SET TEXT SAFELY
     // =====================================================
 
     function setText(id, value) {
@@ -376,115 +227,103 @@ document.addEventListener("DOMContentLoaded", function () {
         const element =
             document.getElementById(id);
 
-        if (element) {
-
-            element.textContent =
-                value;
-
+        if (!element) {
+            return;
         }
+
+        element.textContent =
+            value || "--";
 
     }
 
-
     // =====================================================
-    // CAREER SCORE
+    // CAREER MATCH SCORE
     // =====================================================
 
-    function calculateCareerScore(aiText) {
+    function calculateCareerScore(text) {
+
+        let score = 0;
+
+        const match =
+            text.match(
+                /Career\s*Match\s*Score\s*[:\-]?\s*(\d{1,3})\s*%/i
+            );
+
+        if (match) {
+
+            score =
+                Math.min(
+                    parseInt(match[1]),
+                    100
+                );
+
+        }
 
         const careerScore =
-            document.getElementById(
-                "careerScore"
-            );
+            document.getElementById("careerScore");
 
         const scoreProgress =
-            document.getElementById(
-                "scoreProgress"
-            );
+            document.getElementById("scoreProgress");
 
         const readinessCareer =
             document.getElementById(
                 "readinessCareer"
             );
 
-
-        const match =
-            aiText.match(
-                /Career Match Score\s*:?\s*\**\s*(\d+)\s*%/i
+        const careerProgress =
+            document.getElementById(
+                "careerProgress"
             );
 
+        // -------------------------------------------------
+        // SCORE TEXT
+        // -------------------------------------------------
 
-        if (match) {
+        if (careerScore) {
 
-            const score =
-                parseInt(
-                    match[1],
-                    10
-                );
-
-
-            if (careerScore) {
-
-                careerScore.textContent =
-                    score + "%";
-
-            }
-
-
-            if (scoreProgress) {
-
-                scoreProgress.style.width =
-                    score + "%";
-
-            }
-
-
-            if (readinessCareer) {
-
-                readinessCareer.textContent =
-                    score + "%";
-
-            }
+            careerScore.textContent =
+                score + "%";
 
         }
 
-        else {
+        // -------------------------------------------------
+        // MAIN SCORE PROGRESS
+        // -------------------------------------------------
 
-            if (careerScore) {
+        if (scoreProgress) {
 
-                careerScore.textContent =
-                    "--%";
+            scoreProgress.style.width =
+                score + "%";
 
-            }
+        }
 
+        // -------------------------------------------------
+        // READINESS DASHBOARD
+        // -------------------------------------------------
 
-            if (scoreProgress) {
+        if (readinessCareer) {
 
-                scoreProgress.style.width =
-                    "0%";
+            readinessCareer.textContent =
+                score + "%";
 
-            }
+        }
 
+        if (careerProgress) {
 
-            if (readinessCareer) {
-
-                readinessCareer.textContent =
-                    "--%";
-
-            }
+            careerProgress.style.width =
+                score + "%";
 
         }
 
     }
 
-
     // =====================================================
     // CURRENT SKILLS
     // =====================================================
 
-    function displayCurrentSkills(aiText) {
+    function displayCurrentSkills(text) {
 
-        const currentSkills =
+        const container =
             document.getElementById(
                 "currentSkills"
             );
@@ -494,77 +333,110 @@ document.addEventListener("DOMContentLoaded", function () {
                 "readinessSkills"
             );
 
+        const skillsProgress =
+            document.getElementById(
+                "skillsProgress"
+            );
 
-        if (!currentSkills) {
+        if (!container) {
             return;
         }
 
+        container.innerHTML = "";
+
+        // -------------------------------------------------
+        // FIND CURRENT SKILLS SECTION
+        // -------------------------------------------------
 
         const match =
-            aiText.match(
-                /CURRENT\s+SKILLS\s*:?\s*\**\s*([\s\S]*?)(?=📚|SKILLS\s+TO\s+LEARN|🗺️|🚀|📄|$)/i
+            text.match(
+                /CURRENT\s+SKILLS\s*:?\s*([\s\S]*?)(?=\n\s*(?:SKILLS\s+TO\s+LEARN|MISSING\s+SKILLS|ROADMAP|PROJECTS|RESUME|AI\s+ANALYSIS|$))/i
             );
 
+        if (!match) {
 
-        if (match) {
-
-            currentSkills.innerHTML =
-                formatBulletText(
-                    match[1]
-                );
-
-
-            const lines =
-                match[1]
-                    .split(/\r?\n/)
-                    .filter(function (line) {
-
-                        return line.trim() !== "";
-
-                    });
-
-
-            const score =
-                Math.min(
-                    lines.length * 15,
-                    100
-                );
-
+            container.innerHTML =
+                "<p>No current skills detected.</p>";
 
             if (readinessSkills) {
-
-                readinessSkills.textContent =
-                    score + "%";
-
+                readinessSkills.textContent = "0%";
             }
+
+            if (skillsProgress) {
+                skillsProgress.style.width = "0%";
+            }
+
+            return;
 
         }
 
-        else {
+        const section =
+            match[1].trim();
 
-            currentSkills.textContent =
-                "No current skill information found.";
+        const lines =
+            section
+                .split("\n")
+                .map(function (line) {
+                    return line
+                        .replace(/^[-•*]\s*/, "")
+                        .trim();
+                })
+                .filter(function (line) {
+                    return line.length > 0;
+                });
 
+        // -------------------------------------------------
+        // DISPLAY SKILLS
+        // -------------------------------------------------
 
-            if (readinessSkills) {
+        lines.forEach(function (skill) {
 
-                readinessSkills.textContent =
-                    "0%";
+            const item =
+                document.createElement("div");
 
-            }
+            item.className =
+                "skill-item";
+
+            item.textContent =
+                "✓ " + skill;
+
+            container.appendChild(item);
+
+        });
+
+        // -------------------------------------------------
+        // CALCULATE TECHNICAL SKILL READINESS
+        // -------------------------------------------------
+
+        const score =
+            Math.min(
+                lines.length * 15,
+                100
+            );
+
+        if (readinessSkills) {
+
+            readinessSkills.textContent =
+                score + "%";
+
+        }
+
+        if (skillsProgress) {
+
+            skillsProgress.style.width =
+                score + "%";
 
         }
 
     }
 
-
     // =====================================================
     // MISSING SKILLS
     // =====================================================
 
-    function displayMissingSkills(aiText) {
+    function displayMissingSkills(text) {
 
-        const missingSkills =
+        const container =
             document.getElementById(
                 "missingSkills"
             );
@@ -574,84 +446,112 @@ document.addEventListener("DOMContentLoaded", function () {
                 "readinessAI"
             );
 
+        const aiProgress =
+            document.getElementById(
+                "aiProgress"
+            );
 
-        if (!missingSkills) {
+        if (!container) {
             return;
         }
 
+        container.innerHTML = "";
+
+        // -------------------------------------------------
+        // FIND SKILLS TO LEARN SECTION
+        // -------------------------------------------------
 
         const match =
-            aiText.match(
-                /SKILLS\s+TO\s+LEARN\s*:?\s*\**\s*([\s\S]*?)(?=🗺️|🚀|📄|$)/i
+            text.match(
+                /SKILLS\s+TO\s+LEARN\s*:?\s*([\s\S]*?)(?=\n\s*(?:ROADMAP|PROJECTS|RESUME|AI\s+ANALYSIS|$))/i
             );
 
+        if (!match) {
 
-        if (match) {
-
-            missingSkills.innerHTML =
-                formatBulletText(
-                    match[1]
-                );
-
-
-            const lines =
-                match[1]
-                    .split(/\r?\n/)
-                    .filter(function (line) {
-
-                        return line.trim() !== "";
-
-                    });
-
-
-            const score =
-                Math.max(
-                    100 -
-                    (lines.length * 10),
-                    0
-                );
-
+            container.innerHTML =
+                "<p>No missing skills detected.</p>";
 
             if (readinessAI) {
-
-                readinessAI.textContent =
-                    score + "%";
-
+                readinessAI.textContent = "100%";
             }
+
+            if (aiProgress) {
+                aiProgress.style.width = "100%";
+            }
+
+            calculateOverallReadiness();
+
+            return;
 
         }
 
-        else {
+        const section =
+            match[1].trim();
 
-            missingSkills.textContent =
-                "No skill gaps found.";
+        const lines =
+            section
+                .split("\n")
+                .map(function (line) {
+                    return line
+                        .replace(/^[-•*]\s*/, "")
+                        .trim();
+                })
+                .filter(function (line) {
+                    return line.length > 0;
+                });
 
+        // -------------------------------------------------
+        // DISPLAY MISSING SKILLS
+        // -------------------------------------------------
 
-            if (readinessAI) {
+        lines.forEach(function (skill) {
 
-                readinessAI.textContent =
-                    "0%";
+            const item =
+                document.createElement("div");
 
-            }
+            item.className =
+                "skill-item missing";
+
+            item.textContent =
+                "→ " + skill;
+
+            container.appendChild(item);
+
+        });
+
+        // -------------------------------------------------
+        // AI READINESS
+        // -------------------------------------------------
+
+        const score =
+            Math.max(
+                100 - lines.length * 10,
+                0
+            );
+
+        if (readinessAI) {
+
+            readinessAI.textContent =
+                score + "%";
 
         }
 
+        if (aiProgress) {
+
+            aiProgress.style.width =
+                score + "%";
+
+        }
 
         calculateOverallReadiness();
 
     }
-
 
     // =====================================================
     // OVERALL READINESS
     // =====================================================
 
     function calculateOverallReadiness() {
-
-        const overall =
-            document.getElementById(
-                "readinessOverall"
-            );
 
         const career =
             document.getElementById(
@@ -668,865 +568,338 @@ document.addEventListener("DOMContentLoaded", function () {
                 "readinessAI"
             );
 
+        const overall =
+            document.getElementById(
+                "readinessOverall"
+            );
 
-        if (
-            !overall ||
-            !career ||
-            !skills ||
-            !ai
-        ) {
+        const overallProgress =
+            document.getElementById(
+                "overallProgress"
+            );
 
+        if (!overall) {
             return;
-
         }
 
-
-        const careerValue =
+        const careerScore =
             parseInt(
-                career.textContent,
-                10
+                career?.textContent || "0"
+            ) || 0;
+
+        const skillsScore =
+            parseInt(
+                skills?.textContent || "0"
+            ) || 0;
+
+        const aiScore =
+            parseInt(
+                ai?.textContent || "0"
+            ) || 0;
+
+        const result =
+            Math.round(
+                (
+                    careerScore +
+                    skillsScore +
+                    aiScore
+                ) / 3
             );
 
-        const skillsValue =
-            parseInt(
-                skills.textContent,
-                10
-            );
+        // -------------------------------------------------
+        // OVERALL NUMBER
+        // -------------------------------------------------
 
-        const aiValue =
-            parseInt(
-                ai.textContent,
-                10
-            );
+        overall.textContent =
+            result + "%";
 
+        // -------------------------------------------------
+        // OVERALL PROGRESS BAR
+        // -------------------------------------------------
 
-        if (
-            !isNaN(careerValue) &&
-            !isNaN(skillsValue) &&
-            !isNaN(aiValue)
-        ) {
+        if (overallProgress) {
 
-            const result =
-                Math.round(
-                    (
-                        careerValue +
-                        skillsValue +
-                        aiValue
-                    ) / 3
-                );
-
-
-            overall.textContent =
+            overallProgress.style.width =
                 result + "%";
 
         }
 
     }
 
-
     // =====================================================
     // ROADMAP
     // =====================================================
 
-    function displayRoadmap(aiText) {
+    function displayRoadmap(text) {
 
         const container =
             document.getElementById(
                 "roadmapContainer"
             );
 
-
         if (!container) {
             return;
         }
 
-
-        // -------------------------------------------------
-        // FIND LEARNING ROADMAP
-        // -------------------------------------------------
-
-        const match =
-            aiText.match(
-                /🗺️?\s*\**\s*LEARNING\s+ROADMAP\s*\**\s*:?\s*([\s\S]*?)(?=🚀\s*\**\s*SUGGESTED\s+PROJECTS|📄\s*\**\s*RESUME\s+IMPROVEMENTS|$)/i
-            );
-
-
-        // Clear previous roadmap cards
-
         container.innerHTML = "";
 
+        const match =
+            text.match(
+                /ROADMAP\s*:?\s*([\s\S]*?)(?=\n\s*(?:PROJECTS|RESUME|AI\s+ANALYSIS|$))/i
+            );
 
         if (!match) {
 
-            const card =
-                document.createElement(
-                    "div"
-                );
-
-
-            card.className =
-                "roadmap-card";
-
-
-            card.innerHTML =
-                '<div class="roadmap-number">1</div>' +
-
-                '<div class="roadmap-content">' +
-
-                    '<h4>Career Roadmap</h4>' +
-
-                    '<p>' +
-                        'AI roadmap information was not found.' +
-                    '</p>' +
-
-                '</div>';
-
-
-            container.appendChild(
-                card
-            );
+            container.innerHTML =
+                "<p>Roadmap information unavailable.</p>";
 
             return;
 
         }
 
-
-        const roadmapText =
+        const section =
             match[1].trim();
 
-
-        // -------------------------------------------------
-        // SPLIT STEPS
-        // -------------------------------------------------
-
-        const steps =
-            roadmapText
-                .split(
-                    /(?=Step\s+\d+\s*[:\-–—])/i
-                )
-                .map(function (step) {
-
-                    return step.trim();
-
+        const lines =
+            section
+                .split("\n")
+                .map(function (line) {
+                    return line.trim();
                 })
-                .filter(function (step) {
-
-                    return /^Step\s+\d+\s*[:\-–—]/i
-                        .test(step);
-
+                .filter(function (line) {
+                    return line.length > 0;
                 });
 
+        lines.forEach(function (line, index) {
 
-        // -------------------------------------------------
-        // CREATE CARDS
-        // -------------------------------------------------
+            const card =
+                document.createElement("div");
 
-        steps.forEach(
-            function (step, index) {
+            card.className =
+                "roadmap-card";
 
-                const lines =
-                    step
-                        .split(/\r?\n/)
-                        .map(function (line) {
+            card.innerHTML = `
+                <div class="roadmap-number">
+                    ${index + 1}
+                </div>
 
-                            return line.trim();
+                <div class="roadmap-content">
+                    ${formatRoadmapLine(line)}
+                </div>
+            `;
 
-                        })
-                        .filter(function (line) {
+            container.appendChild(card);
 
-                            return line !== "";
-
-                        });
-
-
-                // -------------------------------------------------
-                // STEP TITLE
-                // -------------------------------------------------
-
-                let title =
-                    lines[0] || "";
-
-
-                title =
-                    title
-                        .replace(
-                            /^Step\s+\d+\s*[:\-–—]\s*/i,
-                            ""
-                        )
-                        .replace(
-                            /\*\*/g,
-                            ""
-                        )
-                        .trim();
-
-
-                // -------------------------------------------------
-                // FIND SKILL
-                // -------------------------------------------------
-
-                let skillLine =
-                    lines.find(
-                        function (line) {
-
-                            return /Skill\s+to\s+learn:/i
-                                .test(line);
-
-                        }
-                    );
-
-
-                let skill = "";
-
-
-                if (skillLine) {
-
-                    skill =
-                        skillLine
-                            .replace(
-                                /^.*Skill\s+to\s+learn:\s*/i,
-                                ""
-                            )
-                            .replace(
-                                /\*\*/g,
-                                ""
-                            )
-                            .trim();
-
-                }
-
-
-                // If no skill line exists
-
-                if (!skill) {
-
-                    skill =
-                        title ||
-                        "Roadmap Step " +
-                        (index + 1);
-
-                }
-
-
-                // -------------------------------------------------
-                // DETAILS
-                // -------------------------------------------------
-
-                const detailLines =
-                    lines
-                        .slice(1)
-                        .filter(function (line) {
-
-                            return !/Skill\s+to\s+learn:/i
-                                .test(line);
-
-                        });
-
-
-                const details =
-                    detailLines
-                        .map(function (line) {
-
-                            return formatRoadmapLine(
-                                line
-                            );
-
-                        })
-                        .join("<br>");
-
-
-                // -------------------------------------------------
-                // CREATE CARD
-                // -------------------------------------------------
-
-                const card =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                card.className =
-                    "roadmap-card";
-
-
-                card.innerHTML =
-
-                    '<div class="roadmap-number">' +
-
-                        (index + 1) +
-
-                    '</div>' +
-
-                    '<div class="roadmap-content">' +
-
-                        '<h4>' +
-
-                            escapeHTML(skill) +
-
-                        '</h4>' +
-
-                        '<p>' +
-
-                            details +
-
-                        '</p>' +
-
-                    '</div>';
-
-
-                container.appendChild(
-                    card
-                );
-
-            }
-        );
+        });
 
     }
 
-
     // =====================================================
-    // FORMAT ROADMAP LINE
+    // ROADMAP FORMATTER
     // =====================================================
 
     function formatRoadmapLine(line) {
 
-        line =
+        return escapeHTML(
             line
                 .replace(
                     /^[-•*]\s*/,
                     ""
                 )
-                .replace(
-                    /\*\*/g,
-                    ""
-                )
-                .trim();
-
-
-        if (!line) {
-            return "";
-        }
-
-
-        return "• " +
-            escapeHTML(line);
+        );
 
     }
-
 
     // =====================================================
     // PROJECTS
     // =====================================================
 
-    function displayProjects(aiText) {
+    function displayProjects(text) {
 
         const container =
             document.getElementById(
                 "projectsContainer"
             );
 
-
         if (!container) {
             return;
         }
 
-
-        const match =
-            aiText.match(
-                /🚀\s*\**\s*SUGGESTED\s+PROJECTS\s*\**\s*([\s\S]*?)(?=📄\s*\**\s*RESUME\s+IMPROVEMENTS|$)/i
-            );
-
-
         container.innerHTML = "";
 
-
-        if (!match) {
-            return;
-        }
-
-
-        const projects =
-            match[1]
-                .split(
-                    /(?=Project\s+\d+\s*[:\-–—])/i
-                )
-                .map(function (project) {
-
-                    return project.trim();
-
-                })
-                .filter(function (project) {
-
-                    return /^Project\s+\d+\s*[:\-–—]/i
-                        .test(project);
-
-                });
-
-
-        projects
-            .slice(0, 3)
-            .forEach(
-                function (project, index) {
-
-                    const lines =
-                        project
-                            .split(/\r?\n/)
-                            .map(function (line) {
-
-                                return line.trim();
-
-                            })
-                            .filter(function (line) {
-
-                                return line !== "";
-
-                            });
-
-
-                    let projectName =
-                        lines[0] || "";
-
-
-                    projectName =
-                        projectName
-                            .replace(
-                                /^Project\s+\d+\s*[:\-–—]\s*/i,
-                                ""
-                            )
-                            .replace(
-                                /\*\*/g,
-                                ""
-                            )
-                            .trim();
-
-
-                    if (!projectName) {
-
-                        projectName =
-                            "AI Project " +
-                            (index + 1);
-
-                    }
-
-
-                    const details =
-                        lines
-                            .slice(1)
-                            .map(function (line) {
-
-                                return formatRoadmapLine(
-                                    line
-                                );
-
-                            })
-                            .join("<br>");
-
-
-                    const card =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    card.className =
-                        "project-card";
-
-
-                    card.innerHTML =
-
-                        '<div class="project-number">' +
-
-                            (index + 1) +
-
-                        '</div>' +
-
-                        '<div class="project-content">' +
-
-                            '<h4>' +
-
-                                '🚀 ' +
-
-                                escapeHTML(
-                                    projectName
-                                ) +
-
-                            '</h4>' +
-
-                            '<p>' +
-
-                                details +
-
-                            '</p>' +
-
-                        '</div>';
-
-
-                    container.appendChild(
-                        card
-                    );
-
-                }
+        const match =
+            text.match(
+                /PROJECTS?\s*:?\s*([\s\S]*?)(?=\n\s*(?:RESUME|AI\s+ANALYSIS|$))/i
             );
 
-    }
+        if (!match) {
 
+            container.innerHTML =
+                "<p>Project suggestions unavailable.</p>";
+
+            return;
+
+        }
+
+        const section =
+            match[1].trim();
+
+        const lines =
+            section
+                .split("\n")
+                .map(function (line) {
+                    return line
+                        .replace(/^[-•*]\s*/, "")
+                        .trim();
+                })
+                .filter(function (line) {
+                    return line.length > 0;
+                });
+
+        lines.forEach(function (project) {
+
+            const card =
+                document.createElement("div");
+
+            card.className =
+                "project-card";
+
+            card.innerHTML = `
+                <h3>${escapeHTML(project)}</h3>
+            `;
+
+            container.appendChild(card);
+
+        });
+
+    }
 
     // =====================================================
     // RESUME
     // =====================================================
 
-    function displayResume(aiText) {
+    function displayResume(text) {
 
         const container =
             document.getElementById(
                 "resumeContainer"
             );
 
+        if (!container) {
+            return;
+        }
+
+        container.innerHTML = "";
+
+        const match =
+            text.match(
+                /RESUME\s*:?\s*([\s\S]*?)(?=\n\s*(?:AI\s+ANALYSIS|$))/i
+            );
+
+        if (!match) {
+
+            container.innerHTML =
+                "<p>Resume recommendations unavailable.</p>";
+
+            return;
+
+        }
+
+        const section =
+            match[1].trim();
+
+        const lines =
+            section
+                .split("\n")
+                .map(function (line) {
+                    return line.trim();
+                })
+                .filter(function (line) {
+                    return line.length > 0;
+                });
+
+        lines.forEach(function (line) {
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                "resume-item";
+
+            item.innerHTML =
+                formatBulletText(line);
+
+            container.appendChild(item);
+
+        });
+
+    }
+
+    // =====================================================
+    // AI RESULT
+    // =====================================================
+
+    function displayAIResult(text) {
+
+        const container =
+            document.getElementById(
+                "aiResult"
+            );
 
         if (!container) {
             return;
         }
 
-
-        const match =
-            aiText.match(
-                /📄\s*\**\s*RESUME\s+IMPROVEMENTS\s*\**\s*([\s\S]*)$/i
-            );
-
-
-        container.innerHTML = "";
-
-
-        if (!match) {
-            return;
-        }
-
-
-        const suggestions =
-            match[1]
-                .split(/\r?\n/)
-                .map(function (line) {
-
-                    return line
-                        .trim()
-                        .replace(
-                            /^[-•*]\s*/,
-                            ""
-                        )
-                        .replace(
-                            /^\d+\.\s*/,
-                            ""
-                        )
-                        .replace(
-                            /\*\*/g,
-                            ""
-                        );
-
-                })
-                .filter(function (line) {
-
-                    return line !== "";
-
-                });
-
-
-        suggestions
-            .slice(0, 4)
-            .forEach(
-                function (
-                    suggestion,
-                    index
-                ) {
-
-                    const card =
-                        document.createElement(
-                            "div"
-                        );
-
-
-                    card.className =
-                        "resume-card";
-
-
-                    card.innerHTML =
-
-                        '<div class="resume-number">' +
-
-                            '📌 ' +
-
-                            (index + 1) +
-
-                        '</div>' +
-
-                        '<p>' +
-
-                            escapeHTML(
-                                suggestion
-                            ) +
-
-                        '</p>';
-
-
-                    container.appendChild(
-                        card
-                    );
-
-                }
-            );
+        container.innerHTML =
+            escapeHTML(text)
+                .replace(/\n/g, "<br>");
 
     }
-
-
-    // =====================================================
-    // FULL AI RESULT
-    // =====================================================
-
-    function displayAIResult(aiText) {
-
-        const aiResult =
-            document.getElementById(
-                "aiResult"
-            );
-
-
-        if (!aiResult) {
-            return;
-        }
-
-
-        // =================================================
-        // IMPORTANT
-        //
-        // Remove sections that already have their own
-        // beautiful cards above.
-        //
-        // This prevents duplicate:
-        // - Learning Roadmap
-        // - Suggested Projects
-        // - Resume Improvements
-        // =================================================
-
-        let result =
-            removeDuplicateSections(
-                aiText
-            );
-
-
-        // Escape HTML first
-
-        result =
-            escapeHTML(result);
-
-
-        // =================================================
-        // SECTION HEADINGS
-        // =================================================
-
-        result =
-            result.replace(
-                /🎯\s*\**\s*RECOMMENDED\s+CAREER\s*\**/gi,
-                "<h2>🎯 Recommended Career</h2>"
-            );
-
-
-        result =
-            result.replace(
-                /💡\s*\**\s*WHY\s+THIS\s+CAREER\s+FITS\s*\**/gi,
-                "<h2>💡 Why This Career Fits</h2>"
-            );
-
-
-        result =
-            result.replace(
-                /💪\s*\**\s*CURRENT\s+SKILL\s+STRENGTHS\s*\**/gi,
-                "<h2>💪 Current Skill Strengths</h2>"
-            );
-
-
-        result =
-            result.replace(
-                /📚\s*\**\s*IMPORTANT\s+SKILL\s+GAPS\s*\**/gi,
-                "<h2>📚 Important Skill Gaps</h2>"
-            );
-
-
-        // =================================================
-        // REMOVE ANY LEFTOVER ROADMAP HEADING
-        // =================================================
-
-        result =
-            result.replace(
-                /🗺️\s*\**\s*LEARNING\s+ROADMAP\s*\**/gi,
-                ""
-            );
-
-
-        result =
-            result.replace(
-                /🚀\s*\**\s*SUGGESTED\s+PROJECTS\s*\**/gi,
-                ""
-            );
-
-
-        result =
-            result.replace(
-                /📄\s*\**\s*RESUME\s+IMPROVEMENTS\s*\**/gi,
-                ""
-            );
-
-
-        // =================================================
-        // BOLD TEXT
-        // =================================================
-
-        result =
-            result.replace(
-                /\*\*(.*?)\*\*/g,
-                "<strong>$1</strong>"
-            );
-
-
-        // =================================================
-        // BULLETS
-        // =================================================
-
-        result =
-            result.replace(
-                /^[-•]\s+(.*?)$/gm,
-                "• $1"
-            );
-
-
-        // =================================================
-        // NEW LINES
-        // =================================================
-
-        result =
-            result.replace(
-                /\n/g,
-                "<br>"
-            );
-
-
-        // =================================================
-        // DISPLAY
-        // =================================================
-
-        aiResult.innerHTML =
-            result;
-
-    }
-
 
     // =====================================================
     // REMOVE DUPLICATE SECTIONS
     // =====================================================
 
-    function removeDuplicateSections(aiText) {
+    function removeDuplicateSections(text) {
 
-        let text =
-            aiText;
-
-
-        // -------------------------------------------------
-        // REMOVE LEARNING ROADMAP
-        // -------------------------------------------------
-
-        text =
-            text.replace(
-                /🗺️\s*\**\s*LEARNING\s+ROADMAP\s*\**[\s\S]*?(?=🚀\s*\**\s*SUGGESTED\s+PROJECTS|📄\s*\**\s*RESUME\s+IMPROVEMENTS|$)/i,
+        return text
+            .replace(
+                /CURRENT\s+SKILLS[\s\S]*?(?=SKILLS\s+TO\s+LEARN)/gi,
                 ""
-            );
-
-
-        // -------------------------------------------------
-        // REMOVE SUGGESTED PROJECTS
-        // -------------------------------------------------
-
-        text =
-            text.replace(
-                /🚀\s*\**\s*SUGGESTED\s+PROJECTS\s*\**[\s\S]*?(?=📄\s*\**\s*RESUME\s+IMPROVEMENTS|$)/i,
-                ""
-            );
-
-
-        // -------------------------------------------------
-        // REMOVE RESUME IMPROVEMENTS
-        // -------------------------------------------------
-
-        text =
-            text.replace(
-                /📄\s*\**\s*RESUME\s+IMPROVEMENTS\s*\**[\s\S]*$/i,
-                ""
-            );
-
-
-        return text.trim();
+            )
+            .trim();
 
     }
 
-
     // =====================================================
-    // FORMAT BULLETS
+    // BULLET FORMATTER
     // =====================================================
 
     function formatBulletText(text) {
 
-        return text
-            .trim()
-            .split(/\r?\n/)
-            .map(function (line) {
-
-                line =
-                    line
-                        .trim()
-                        .replace(
-                            /^[-•*]\s*/,
-                            ""
-                        )
-                        .replace(
-                            /\*\*/g,
-                            ""
-                        );
-
-
-                if (!line) {
-                    return "";
-                }
-
-
-                return "• " +
-                    escapeHTML(line);
-
-            })
-            .filter(function (line) {
-
-                return line !== "";
-
-            })
-            .join("<br>");
+        return escapeHTML(
+            text
+                .replace(
+                    /^[-•*]\s*/,
+                    ""
+                )
+        );
 
     }
 
-
     // =====================================================
-    // ESCAPE HTML
+    // HTML ESCAPE
     // =====================================================
 
-    function escapeHTML(text) {
+    function escapeHTML(value) {
 
-        const div =
-            document.createElement(
-                "div"
-            );
-
-
-        div.textContent =
-            text;
-
-
-        return div.innerHTML;
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
 
     }
-
 
 });
